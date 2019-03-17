@@ -291,8 +291,8 @@ let py_exe = has('python') ? 'python' : 'python3'
 execute py_exe "<< EOF"
 import vim
 import time
-import commands
 import threading
+import subprocess
 
 try:
     import queue
@@ -307,7 +307,8 @@ class ZenThread(threading.Thread):
         self.name = name
 
     def run(self):
-        (status, output) = commands.getstatusoutput(self.cmd)
+        proc = subprocess.Popen(self.cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        (status, output) = proc.communicate()
         self.queue.put((self.cmd, output, status, self.name))
 
 
