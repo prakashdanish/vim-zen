@@ -1,8 +1,8 @@
 " ==========================================================
 " Name:         vim-zen: Vim plugin manager
 " Maintainer:   Danish Prakash
-" HomePage:     https://github.com/prakashdanish/vim-zen
-" Version:      1.0.0
+" HomePage:     https://github.com/danishprakash/vim-zen
+" License:      MIT
 " ==========================================================
 
 
@@ -292,7 +292,7 @@ execute py_exe "<< EOF"
 import vim
 import time
 import threading
-import os
+import subprocess
 
 try:
     import queue
@@ -307,15 +307,8 @@ class ZenThread(threading.Thread):
         self.name = name
 
     def run(self):
-        pipe = os.popen('{ ' + self.cmd + '; } 2>&1', 'r')
-        output = pipe.read()
-        status = pipe.close()
-
-        if status is None:
-            status = 0
-        if text[-1:] == '\n': 
-            text = text[:-1]
-        
+        proc = subprocess.Popen(self.cmd, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+        (status, output) = proc.communicate()
         self.queue.put((self.cmd, output, status, self.name))
 
 
